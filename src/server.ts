@@ -14,9 +14,47 @@ import { seedProjects } from "./config/projectsSeed";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Allowed origins: the production frontend + local dev origins
+const allowedOrigins = [
+  process.env.FRONTEND_URL,          // e.g. https://lumiora-two.vercel.app
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+].filter(Boolean) as string[];
+
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server calls (no origin header) and whitelisted origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS policy: origin '${origin}' not allowed`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
+
+let isSeeded = false;
+
+// Database Connection & Seeding Middleware for Serverless
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    if (!isSeeded) {
+      await seedDefaultConfig();
+      await seedProjects();
+      await seedAdmin();
+      isSeeded = true;
+    }
+    next();
+  } catch (error) {
+    console.error("Database connection/seeding failure in middleware:", error);
+    next(error);
+  }
+});
 
 // Routes mapping
 app.use("/api/bookings", bookingsRouter);
@@ -24,6 +62,16 @@ app.use("/api/quotes", quotesRouter);
 app.use("/api/contact", contactsRouter);
 app.use("/api/admin/config", configRouter);
 app.use("/api/projects", projectsRouter);
+
+// Home root info route
+app.get("/", (req, res) => {
+  res.json({
+    name: "Lumiora API Server",
+    version: "1.0.0",
+    status: "Healthy",
+    docs: "/health"
+  });
+});
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -72,16 +120,11 @@ async function seedAdmin() {
   }
 }
 
-// Start database connection and listen
-async function startServer() {
-  await connectDB();
-  await seedDefaultConfig();
-  await seedProjects();
-  await seedAdmin();
-  
+// Listen on port locally (conditional for Vercel serverless environment)
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`🚀 Lumiora API Server running on port ${PORT}`);
   });
 }
 
-startServer();
+export default app;
