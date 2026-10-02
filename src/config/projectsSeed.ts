@@ -51,13 +51,13 @@ export const initialProjects = [
   },
   {
     slug: "assetloop-rental-platform",
-    title: "AssetLoop — Rental Platform",
-    category: "Full-Stack Web App",
+    title: "AssetLoop",
+    category: "Rental Marketplace / Web Platform",
     status: "Live",
-    desc: "End-to-end rental platform supporting full booking workflows, handling 100+ concurrent user interactions, with JWT-secured role-based access control.",
-    longDesc: "AssetLoop is a high-performance rental asset management platform. It allows equipment owners to lease assets and renters to browse and reserve bookings. Built with a modern Angular front-end and a robust Node.js/Express backend, integrated with Supabase storage and MongoDB tracking.",
-    tags: ["Angular", "Node.js", "MongoDB", "JWT"],
-    metrics: "↓ 20% API Latency",
+    desc: "A peer-to-peer asset rental platform connecting asset owners and renters through a centralized marketplace.",
+    longDesc: "AssetLoop is a peer-to-peer asset rental platform that connects asset owners and renters through a centralized marketplace. The platform supports owner and renter workflows, asset listings, search, messaging, wallet/payment functionality with Stripe, storage, and admin tools.",
+    tags: ["Angular", "Node.js", "MongoDB", "Stripe"],
+    metrics: "Marketplace Platform",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070",
     liveUrl: "https://assetloop-rental-platform.vercel.app/",
     screenshots: [
@@ -65,46 +65,62 @@ export const initialProjects = [
       "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070"
     ],
     features: [
-      "Role-based user dashboard (Owner vs. Renter)",
-      "Real-time reservation calendar and availability tracking",
-      "Secure JWT token authentication and session management",
-      "Dynamic search filters for equipment categories",
-      "Image-based asset condition verification upload system"
+      "User authentication",
+      "Owner and renter workflows",
+      "Asset listings and search",
+      "Messaging",
+      "Wallet / payment functionality with Stripe",
+      "Storage and admin functionality"
     ],
-    techStack: ["Angular", "Node.js", "Express.js", "MongoDB", "Mongoose", "Supabase", "Tailwind CSS"]
+    techStack: ["Angular", "Node.js", "Express", "MongoDB", "Supabase", "Stripe", "Vercel"],
+    problem:
+      "Asset owners and renters lacked a centralized platform to list, discover, and manage peer-to-peer asset rentals with clear workflows for both sides.",
+    solution:
+      "A peer-to-peer asset rental marketplace with authentication, owner/renter workflows, listings, search, messaging, payments via Stripe, storage, and admin tools.",
+    contribution:
+      "8BitField designed and built the web platform end to end — Angular frontend, Node.js/Express backend, MongoDB data layer, Supabase storage, and Stripe payment integration.",
+    outcome:
+      "A live rental marketplace platform connecting owners and renters through a single product."
   },
   {
     slug: "cry-care-baby-classification",
-    title: "Cry-Care Baby Classification",
-    category: "ML / AI Mobile App",
+    title: "CryCare",
+    category: "AI / Machine Learning",
     status: "Live",
-    desc: "Baby cry audio classification system achieving 88% accuracy. Balances 900+ records via SMOTE/ADASYN.",
-    longDesc: "A machine learning powered audio classification system that records and analyzes infant cries to classify their needs (hunger, pain, sleepiness, etc.). Features audio preprocessing pipelines, Mel-Frequency Cepstral Coefficients (MFCC) feature extraction, and optimized XGBoost/SVM classifiers.",
-    tags: ["Python", "XGBoost", "SVM", "Scikit-Learn"],
-    metrics: "88% Model Accuracy",
+    desc: "An intelligent baby-cry recognition system that classifies cries into categories such as hungry, tired, discomfort, burping, and belly pain.",
+    longDesc: "CryCare is an intelligent baby-cry recognition system designed to classify baby cries into different categories using machine-learning techniques. 8BitField's contribution focused on the machine-learning component: audio feature extraction and model development for classifying cries into categories such as hungry, tired, discomfort, burping, and belly pain.",
+    tags: ["Python", "Machine Learning", "Scikit-learn"],
+    metrics: "ML Classification",
     image: "https://images.unsplash.com/photo-1516110833967-0b5716ca1387?q=80&w=1974",
     screenshots: [
       "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=2070",
       "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2038"
     ],
     features: [
-      "Real-time audio recording and wave processing",
-      "MFCC spectrogram feature extraction from audio buffers",
-      "SMOTE & ADASYN data balancing over 900+ data instances",
-      "Highly accurate XGBoost classification engine",
-      "React Native mobile prototype interface"
+      "Audio feature extraction for cry classification",
+      "Machine-learning models for cry category prediction",
+      "Categories: Hungry, Tired, Discomfort, Burping, Belly pain",
+      "ML API for inference"
     ],
-    techStack: ["Python", "Scikit-Learn", "Librosa (Audio processing)", "XGBoost", "React Native", "Flask"]
+    techStack: ["Python", "Machine Learning", "Audio feature extraction", "Scikit-learn", "ML API"],
+    problem:
+      "Caregivers often struggle to interpret infant cries quickly and consistently across common needs such as hunger, tiredness, or discomfort.",
+    solution:
+      "A machine-learning system that extracts audio features from baby cry recordings and classifies them into practical categories for caregiver support.",
+    contribution:
+      "8BitField's contribution was the machine-learning component — audio feature extraction, model development, and an ML API for inference. The broader mobile application was not developed entirely by 8BitField.",
+    outcome:
+      "A working cry-classification ML pipeline that can categorize cries into hungry, tired, discomfort, burping, and belly pain."
   },
   {
     slug: "marketing-crm-analytics",
-    title: "DentalCRM Marketing System",
-    category: "Full-Stack Dental CRM",
+    title: "Dental Billing Platform",
+    category: "CRM / Business Analytics",
     status: "Live",
-    desc: "SaaS marketing dashboard for dental billing and clinics, managing patient leads, tracking campaign performance, and displaying real-time traffic statistics.",
-    longDesc: "DentalCRM is a specialized marketing analytics dashboard built for dental clinics and dental billing agencies. It monitors daily visitors and conversions, tracks campaign performance (Google Ads, Facebook Ads), manages incoming dental leads, and facilitates direct patient contact scheduling and history tracking in real time.",
-    tags: ["Next.js", "Node.js", "Firebase", "Analytics"],
-    metrics: "Real-time Traffic Tracking",
+    desc: "A business management and marketing analytics platform for a dental billing practice.",
+    longDesc: "A business management and marketing analytics platform built for a dental billing practice. It supports lead management, contact form integration, visitor attribution, UTM tracking, lead status management, notes, call/email actions, analytics dashboards, and conversion tracking.",
+    tags: ["Next.js", "React", "TypeScript", "Node.js"],
+    metrics: "CRM & Analytics",
     image: "/images/projects/dental-crm/screen1.png",
     liveUrl: "https://dental-billing-team.vercel.app/",
     screenshots: [
@@ -112,13 +128,22 @@ export const initialProjects = [
       "/images/projects/dental-crm/screen3.png"
     ],
     features: [
-      "Interactive admin panel monitoring daily visitors and conversions",
-      "Detailed Leads Management grid with service type filters (Implant, Whitening, Cleaning)",
-      "Activity history logging and custom patient notes management",
-      "Campaign performance indicators monitoring ROI by marketing source",
-      "Traffic volume analytics breakdown (Google Ads, Facebook, Instagram)"
+      "Lead management",
+      "Contact form integration",
+      "Visitor attribution and UTM tracking",
+      "Lead status management and notes",
+      "Call / email actions",
+      "Analytics dashboard and conversion tracking"
     ],
-    techStack: ["Next.js", "Node.js", "Firebase", "Chart.js", "Tailwind CSS", "Vercel"]
+    techStack: ["Next.js", "React", "TypeScript", "Node.js", "Database"],
+    problem:
+      "A dental billing practice needed a clearer way to manage inbound leads, attribute marketing traffic, and track follow-up activity in one place.",
+    solution:
+      "A business management and marketing analytics platform with lead management, UTM/visitor attribution, status tracking, notes, call/email actions, and conversion dashboards.",
+    contribution:
+      "8BitField built the web application and analytics workflows using Next.js, React, TypeScript, and Node.js around the practice's lead and marketing operations.",
+    outcome:
+      "A live CRM and analytics platform used to manage leads and track marketing performance for the dental billing practice."
   },
   {
     slug: "mlb-ai-predictor-analytics",
@@ -211,9 +236,24 @@ export const initialProjects = [
   }
 ];
 
-export async function seedProjects() {
+export async function seedProjects(forceUpdate = false) {
   try {
     const count = await Project.countDocuments();
+
+    if (forceUpdate) {
+      let updated = 0;
+      for (const project of initialProjects) {
+        await Project.findOneAndUpdate(
+          { slug: project.slug },
+          { $set: project },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        updated += 1;
+      }
+      console.log(`✅ Upserted ${updated} portfolio projects (was ${count}).`);
+      return;
+    }
+
     if (count === 0) {
       await Project.insertMany(initialProjects);
       console.log("✅ Seeded default portfolio projects details.");

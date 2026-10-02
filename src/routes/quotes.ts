@@ -45,7 +45,7 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const quoteId = "LUMI-Q-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const quoteId = "8BF-Q-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     
     const newQuote = new Quote({
       quoteId,

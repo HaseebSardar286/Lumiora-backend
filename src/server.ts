@@ -7,6 +7,7 @@ import quotesRouter from "./routes/quotes";
 import contactsRouter from "./routes/contacts";
 import configRouter from "./routes/config";
 import projectsRouter from "./routes/projects";
+import uploadsRouter, { UPLOADS_ROOT } from "./routes/uploads";
 import AdminConfig from "./models/AdminConfig";
 import Admin from "./models/Admin";
 import { seedProjects } from "./config/projectsSeed";
@@ -19,6 +20,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,          // e.g. https://lumiora-two.vercel.app
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "http://localhost:3001",
+  "http://127.0.0.1:3001",
 ].filter(Boolean) as string[];
 
 // Middleware
@@ -36,6 +39,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use("/uploads", express.static(UPLOADS_ROOT));
 
 let isSeeded = false;
 
@@ -62,11 +66,12 @@ app.use("/api/quotes", quotesRouter);
 app.use("/api/contact", contactsRouter);
 app.use("/api/admin/config", configRouter);
 app.use("/api/projects", projectsRouter);
+app.use("/api/uploads", uploadsRouter);
 
 // Home root info route
 app.get("/", (req, res) => {
   res.json({
-    name: "Lumiora API Server",
+    name: "8BitField API Server",
     version: "1.0.0",
     status: "Healthy",
     docs: "/health"
@@ -106,7 +111,7 @@ async function seedDefaultConfig() {
 // Seed default admin login credentials and keep in sync with .env
 async function seedAdmin() {
   try {
-    const email = process.env.ADMIN_EMAIL || "admin@lumiora.com";
+    const email = process.env.ADMIN_EMAIL || "admin@8bitfield.com";
     const password = process.env.ADMIN_PASSWORD || "@HKtech100#";
 
     await Admin.findOneAndUpdate(
@@ -123,7 +128,7 @@ async function seedAdmin() {
 // Listen on port locally (conditional for Vercel serverless environment)
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`🚀 Lumiora API Server running on port ${PORT}`);
+    console.log(`🚀 8BitField API Server running on port ${PORT}`);
   });
 }
 

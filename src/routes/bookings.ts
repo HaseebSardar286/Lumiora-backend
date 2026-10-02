@@ -133,7 +133,7 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "This time slot is already booked" });
     }
 
-    const bookingId = "LUMI-B-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const bookingId = "8BF-B-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     const protocol = req.headers["x-forwarded-proto"] || "http";
     const host = req.headers.host || "localhost:3000";
     const baseUrl = `${protocol}://${host}`;
@@ -160,7 +160,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     await sendEmail({
       to: email,
-      subject: "Consultation Request Received - Lumiora",
+      subject: "Consultation Request Received - 8BitField",
       html: getUserPendingEmail({
         name,
         date,
@@ -261,7 +261,7 @@ router.post("/:id/status", async (req: Request, res: Response) => {
 
       await sendEmail({
         to: booking.email,
-        subject: "Consultation Approved & Meeting Details - Lumiora",
+        subject: "Consultation Approved & Meeting Details - 8BitField",
         html: getUserApprovedEmail({
           name: booking.name,
           date: booking.date,
@@ -276,7 +276,7 @@ router.post("/:id/status", async (req: Request, res: Response) => {
     } else if (action === "decline") {
       await sendEmail({
         to: booking.email,
-        subject: "Consultation Request Declined - Lumiora",
+        subject: "Consultation Request Declined - 8BitField",
         html: getUserRejectedEmail({
           name: booking.name,
           date: booking.date,
@@ -294,7 +294,7 @@ router.post("/:id/status", async (req: Request, res: Response) => {
 
       await sendEmail({
         to: booking.email,
-        subject: "Consultation Suggested Reschedule Time - Lumiora",
+        subject: "Consultation Suggested Reschedule Time - 8BitField",
         html: getUserRescheduledEmail({
           name: booking.name,
           originalDate: booking.date,
@@ -371,7 +371,7 @@ router.post("/:id/respond", async (req: Request, res: Response) => {
 
       await sendEmail({
         to: booking.email,
-        subject: "Consultation Approved & Meeting Details - Lumiora",
+        subject: "Consultation Approved & Meeting Details - 8BitField",
         html: getUserApprovedEmail({
           name: booking.name,
           date: newDate,

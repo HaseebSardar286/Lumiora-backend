@@ -14,6 +14,10 @@ export interface IProject extends Document {
   screenshots: string[];
   features: string[];
   techStack: string[];
+  problem?: string;
+  solution?: string;
+  contribution?: string;
+  outcome?: string;
   createdAt: Date;
 }
 
@@ -31,6 +35,10 @@ const ProjectSchema: Schema = new Schema({
   screenshots: { type: [String], required: true },
   features: { type: [String], required: true },
   techStack: { type: [String], required: true },
+  problem: { type: String, default: "" },
+  solution: { type: String, default: "" },
+  contribution: { type: String, default: "" },
+  outcome: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now }
 });
 

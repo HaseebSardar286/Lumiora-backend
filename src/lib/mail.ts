@@ -11,7 +11,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions): Promise<bo
   const port = parseInt(process.env.SMTP_PORT || "587");
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
-  const from = process.env.EMAIL_FROM || '"Lumiora Consultations" <noreply@lumiora.com>';
+  const from = process.env.EMAIL_FROM || '"8BitField Consultations" <noreply@8bitfield.com>';
 
   if (!host || !user || !pass) {
     console.warn("⚠️ SMTP credentials are NOT fully configured in environment variables.");
@@ -54,7 +54,7 @@ const emailLayout = (content: string) => `
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumiora Consultations</title>
+  <title>8BitField Consultations</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
     .container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
@@ -79,14 +79,13 @@ const emailLayout = (content: string) => `
 <body>
   <div class="container">
     <div class="header">
-      <h1>Lumiora</h1>
+      <h1>8BitField</h1>
     </div>
     <div class="content">
       ${content}
     </div>
     <div class="footer">
-      © ${new Date().getFullYear()} Lumiora. All rights reserved.<br>
-      San Francisco, CA 94105
+      © ${new Date().getFullYear()} 8BitField. All rights reserved.
     </div>
   </div>
 </body>
@@ -152,7 +151,7 @@ export function getUserPendingEmail(booking: {
   return emailLayout(`
     <h2 style="margin-top: 0; font-size: 20px; font-weight: 800; color: #0f172a;">Booking Request Received</h2>
     <p>Hi ${booking.name},</p>
-    <p>Thank you for requesting a free consultation with Lumiora. Your request is currently <span class="badge badge-pending">Pending Approval</span> by our team.</p>
+    <p>Thank you for requesting a free consultation with 8BitField. Your request is currently <span class="badge badge-pending">Pending Approval</span> by our team.</p>
     <p>We will review your requested time slot and send a confirmation or rescheduling proposal shortly.</p>
     
     <div class="details-box">
@@ -219,7 +218,7 @@ export function getUserRejectedEmail(booking: {
   return emailLayout(`
     <h2 style="margin-top: 0; font-size: 20px; font-weight: 800; color: #0f172a;">Booking Request Declined</h2>
     <p>Hi ${booking.name},</p>
-    <p>Thank you for your interest in scheduling a consultation with Lumiora.</p>
+    <p>Thank you for your interest in scheduling a consultation with 8BitField.</p>
     <p>Unfortunately, our team is unavailable at your requested time: <strong>${booking.date} at ${booking.time}</strong>, and we are unable to approve this request.</p>
     <p>We welcome you to try scheduling another time slot that fits your schedule.</p>
     

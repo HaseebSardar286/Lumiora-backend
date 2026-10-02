@@ -21,6 +21,8 @@ router.get("/", async (req: Request, res: Response) => {
       name: c.name,
       email: c.email,
       company: c.company,
+      projectType: c.projectType,
+      budget: c.budget,
       notes: c.notes,
       createdAt: c.createdAt
     }));
@@ -35,19 +37,21 @@ router.get("/", async (req: Request, res: Response) => {
 // POST new contact message
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { name, email, company, notes } = req.body;
+    const { name, email, company, projectType, budget, notes } = req.body;
 
     if (!name || !email || !notes) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const contactId = "LUMI-C-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const contactId = "8BF-C-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     
     const newContact = new Contact({
       contactId,
       name,
       email,
       company: company || "",
+      projectType: projectType || "",
+      budget: budget || "",
       notes
     });
 
@@ -59,17 +63,19 @@ router.post("/", async (req: Request, res: Response) => {
       try {
         await sendEmail({
           to: adminEmail,
-          subject: `[Admin] New Contact Message: ${name}`,
+          subject: `[Admin] New Project Inquiry: ${name}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 12px;">
-              <h2 style="color: #4f46e5; margin-top: 0;">New Contact Message Received</h2>
-              <p>A new general message has been submitted with the details below:</p>
+              <h2 style="color: #111184; margin-top: 0;">New Project Inquiry</h2>
+              <p>A new project inquiry has been submitted:</p>
               <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
                 <p><strong>Message ID:</strong> ${contactId}</p>
                 <p><strong>Name:</strong> ${name}</p>
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Company:</strong> ${company || "N/A"}</p>
-                <p><strong>Message:</strong><br>${notes}</p>
+                <p><strong>Project Type:</strong> ${projectType || "N/A"}</p>
+                <p><strong>Budget:</strong> ${budget || "N/A"}</p>
+                <p><strong>Project Description:</strong><br>${notes}</p>
               </div>
               <p style="font-size: 12px; color: #64748b;">This message was saved to the admin database. Access your dashboard at /admin to manage it.</p>
             </div>
