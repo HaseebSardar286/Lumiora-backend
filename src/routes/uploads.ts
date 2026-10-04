@@ -6,15 +6,24 @@ import { validateAdmin } from "../lib/auth";
 
 const router = Router();
 
-export const UPLOADS_ROOT = path.join(process.cwd(), "uploads");
+// On Vercel/serverless only /tmp is writable; locally use ./uploads
+export const UPLOADS_ROOT = process.env.VERCEL
+  ? path.join("/tmp", "8bitfield-uploads")
+  : path.join(process.cwd(), "uploads");
+
 const PROJECTS_UPLOAD_DIR = path.join(UPLOADS_ROOT, "projects");
 
 function ensureDir(dir: string) {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (error) {
+    console.error("⚠️ Could not create upload directory:", dir, error);
   }
 }
 
+// Lazy init — never crash the whole API at import time on serverless
 ensureDir(PROJECTS_UPLOAD_DIR);
 
 function slugifyFolder(value: string): string {
@@ -27,10 +36,14 @@ function slugifyFolder(value: string): string {
 
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
-    const folder = slugifyFolder(String(req.body.folder || req.query.folder || "project"));
-    const dest = path.join(PROJECTS_UPLOAD_DIR, folder);
-    ensureDir(dest);
-    cb(null, dest);
+    try {
+      const folder = slugifyFolder(String(req.body.folder || req.query.folder || "project"));
+      const dest = path.join(PROJECTS_UPLOAD_DIR, folder);
+      ensureDir(dest);
+      cb(null, dest);
+    } catch (error: any) {
+      cb(error, "");
+    }
   },
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase() || ".png";
@@ -57,6 +70,13 @@ const upload = multer({
 
 // POST /api/uploads/projects — admin image upload
 router.post("/projects", (req: Request, res: Response) => {
+  if (process.env.VERCEL) {
+    return res.status(503).json({
+      error:
+        "Image uploads are not available on the serverless API host. Use image URLs, or run the API on a host with persistent disk.",
+    });
+  }
+
   upload.array("images", 12)(req, res, async (err) => {
     try {
       if (err) {
@@ -67,7 +87,6 @@ router.post("/projects", (req: Request, res: Response) => {
       const password = req.body.password;
       const isValid = await validateAdmin(email, password);
       if (!isValid) {
-        // Clean up files if auth failed
         const files = (req.files as Express.Multer.File[]) || [];
         for (const file of files) {
           try {

@@ -41,10 +41,27 @@ app.use(
 app.use(express.json());
 app.use("/uploads", express.static(UPLOADS_ROOT));
 
+// Lightweight routes that must not depend on MongoDB
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date() });
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    name: "8BitField API Server",
+    version: "1.0.0",
+    status: "Healthy",
+    docs: "/health",
+  });
+});
+
 let isSeeded = false;
 
-// Database Connection & Seeding Middleware for Serverless
+// Database Connection & Seeding Middleware for Serverless (API routes only)
 app.use(async (req, res, next) => {
+  if (req.path === "/health" || req.path === "/") {
+    return next();
+  }
   try {
     await connectDB();
     if (!isSeeded) {
@@ -68,21 +85,6 @@ app.use("/api/admin/config", configRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/uploads", uploadsRouter);
 
-// Home root info route
-app.get("/", (req, res) => {
-  res.json({
-    name: "8BitField API Server",
-    version: "1.0.0",
-    status: "Healthy",
-    docs: "/health"
-  });
-});
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date() });
-});
-
 // Seed default availability configurations if none exists
 async function seedDefaultConfig() {
   try {
@@ -96,9 +98,9 @@ async function seedDefaultConfig() {
           "11:00 AM",
           "02:00 PM",
           "03:00 PM",
-          "04:00 PM"
+          "04:00 PM",
         ],
-        blockedDates: []
+        blockedDates: [],
       });
       await defaultConfig.save();
       console.log("✅ Seeded default admin availability slot configuration.");
@@ -111,15 +113,20 @@ async function seedDefaultConfig() {
 // Seed default admin login credentials and keep in sync with .env
 async function seedAdmin() {
   try {
-    const email = process.env.ADMIN_EMAIL || "admin@8bitfield.com";
-    const password = process.env.ADMIN_PASSWORD || "@HKtech100#";
+    const strip = (v: string) => v.trim().replace(/^["']|["']$/g, "");
+    const email = strip(
+      (process.env.ADMIN_EMAIL || "admin@8bitfield.com").toLowerCase()
+    );
+    const password = strip(process.env.ADMIN_PASSWORD || "@HKtech100#");
 
+    // Keep a single canonical admin matching production env vars
+    await Admin.deleteMany({ email: { $ne: email } });
     await Admin.findOneAndUpdate(
       { email },
       { email, password },
-      { upsert: true, new: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
-    console.log("✅ Seeded/synced admin credentials in database.");
+    console.log(`✅ Seeded/synced admin credentials in database (${email}).`);
   } catch (error) {
     console.error("⚠️ Failed to seed default admin:", error);
   }
