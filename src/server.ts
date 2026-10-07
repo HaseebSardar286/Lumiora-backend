@@ -85,6 +85,29 @@ app.use("/api/admin/config", configRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/uploads", uploadsRouter);
 
+// Always return JSON for API misses/errors (never HTML DOCTYPE pages)
+app.use((req, res) => {
+  res.status(404).json({ error: `Not found: ${req.method} ${req.originalUrl}` });
+});
+
+app.use(
+  (
+    err: Error,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error("Unhandled API error:", err);
+    const status =
+      (err as Error & { status?: number; statusCode?: number }).status ||
+      (err as Error & { statusCode?: number }).statusCode ||
+      500;
+    res.status(status).json({
+      error: err.message || "Internal server error",
+    });
+  }
+);
+
 // Seed default availability configurations if none exists
 async function seedDefaultConfig() {
   try {
