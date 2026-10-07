@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 5000;
 
 // Allowed origins: the production frontend + local dev origins
 const allowedOrigins = [
-  process.env.FRONTEND_URL,          // e.g. https://lumiora-two.vercel.app
+  process.env.FRONTEND_URL, // e.g. https://8bitfield.com
+  "https://8bitfield.com",
+  "https://www.8bitfield.com",
+  "https://lumiora-two.vercel.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "http://localhost:3001",
