@@ -5,31 +5,96 @@ import { validateAdmin } from "../lib/auth";
 
 const router = Router();
 
+function formatContact(c: {
+  contactId: string;
+  name: string;
+  email: string;
+  company: string;
+  projectType: string;
+  budget: string;
+  notes: string;
+  read?: boolean;
+  createdAt: Date;
+}) {
+  return {
+    id: c.contactId,
+    name: c.name,
+    email: c.email,
+    company: c.company,
+    projectType: c.projectType,
+    budget: c.budget,
+    notes: c.notes,
+    read: Boolean(c.read),
+    createdAt: c.createdAt,
+  };
+}
+
+async function requireAdmin(req: Request, res: Response): Promise<boolean> {
+  const email = (req.body?.email ?? req.query?.email) as string | undefined;
+  const password = (req.body?.password ?? req.query?.password) as string | undefined;
+  const isValid = await validateAdmin(email, password);
+  if (!isValid) {
+    res.status(401).json({ error: "Unauthorized" });
+    return false;
+  }
+  return true;
+}
+
 // GET all contact messages (admin protected)
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.query;
-    const isValid = await validateAdmin(email, password);
-
-    if (!isValid) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!(await requireAdmin(req, res))) return;
 
     const contacts = await Contact.find().sort({ createdAt: -1 });
-    const formattedContacts = contacts.map((c) => ({
-      id: c.contactId,
-      name: c.name,
-      email: c.email,
-      company: c.company,
-      projectType: c.projectType,
-      budget: c.budget,
-      notes: c.notes,
-      createdAt: c.createdAt
-    }));
-
-    return res.json({ contacts: formattedContacts });
+    return res.json({ contacts: contacts.map(formatContact) });
   } catch (error: any) {
     console.error("Error fetching contacts:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// PATCH mark read / unread (admin protected)
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    if (!(await requireAdmin(req, res))) return;
+
+    const { id } = req.params;
+    if (typeof req.body.read !== "boolean") {
+      return res.status(400).json({ error: "Body must include read: true | false" });
+    }
+
+    const contact = await Contact.findOneAndUpdate(
+      { contactId: id },
+      { read: req.body.read },
+      { new: true }
+    );
+
+    if (!contact) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    return res.json({ contact: formatContact(contact) });
+  } catch (error: any) {
+    console.error("Error updating contact:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE contact message (admin protected)
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    if (!(await requireAdmin(req, res))) return;
+
+    const { id } = req.params;
+    const contact = await Contact.findOneAndDelete({ contactId: id });
+
+    if (!contact) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    return res.json({ success: true, id });
+  } catch (error: any) {
+    console.error("Error deleting contact:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -43,8 +108,9 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const contactId = "8BF-C-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    
+    const contactId =
+      "8BF-C-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
     const newContact = new Contact({
       contactId,
       name,
@@ -52,12 +118,12 @@ router.post("/", async (req: Request, res: Response) => {
       company: company || "",
       projectType: projectType || "",
       budget: budget || "",
-      notes
+      notes,
+      read: false,
     });
 
     await newContact.save();
 
-    // Send email alert to admin
     const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER;
     if (adminEmail) {
       try {
@@ -79,17 +145,19 @@ router.post("/", async (req: Request, res: Response) => {
               </div>
               <p style="font-size: 12px; color: #64748b;">This message was saved to the admin database. Access your dashboard at /admin to manage it.</p>
             </div>
-          `
+          `,
         });
       } catch (err) {
         console.error("⚠️ Failed to send contact email to admin:", err);
       }
     }
 
-    return res.json({ success: true, contact: newContact });
+    return res.json({ success: true, contact: formatContact(newContact) });
   } catch (error: any) {
     console.error("Contact submit error:", error);
-    return res.status(500).json({ error: error.message || "Failed to process contact message." });
+    return res
+      .status(500)
+      .json({ error: error.message || "Failed to process contact message." });
   }
 });
 

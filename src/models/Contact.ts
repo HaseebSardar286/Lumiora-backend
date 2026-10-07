@@ -8,6 +8,7 @@ export interface IContact extends Document {
   projectType: string;
   budget: string;
   notes: string;
+  read: boolean;
   createdAt: Date;
 }
 
@@ -19,7 +20,8 @@ const ContactSchema: Schema = new Schema({
   projectType: { type: String, default: "" },
   budget: { type: String, default: "" },
   notes: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  read: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export default mongoose.models.Contact || mongoose.model<IContact>("Contact", ContactSchema);

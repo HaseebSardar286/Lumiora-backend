@@ -133,23 +133,23 @@ async function seedDefaultConfig() {
   }
 }
 
-// Seed default admin login credentials and keep in sync with .env
+// Seed admin credentials from .env only when the admins collection is empty.
+// Login always validates against the DB — never overwrite passwords set in MongoDB.
 async function seedAdmin() {
   try {
+    const existingCount = await Admin.countDocuments();
+    if (existingCount > 0) {
+      return;
+    }
+
     const strip = (v: string) => v.trim().replace(/^["']|["']$/g, "");
     const email = strip(
       (process.env.ADMIN_EMAIL || "admin@8bitfield.com").toLowerCase()
     );
     const password = strip(process.env.ADMIN_PASSWORD || "@HKtech100#");
 
-    // Keep a single canonical admin matching production env vars
-    await Admin.deleteMany({ email: { $ne: email } });
-    await Admin.findOneAndUpdate(
-      { email },
-      { email, password },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-    console.log(`✅ Seeded/synced admin credentials in database (${email}).`);
+    await Admin.create({ email, password });
+    console.log(`✅ Seeded initial admin credentials in database (${email}).`);
   } catch (error) {
     console.error("⚠️ Failed to seed default admin:", error);
   }
